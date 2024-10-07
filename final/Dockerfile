@@ -4,7 +4,6 @@
 ARG base_IMAGE_TAG
 ARG openssl_IMAGE_TAG
 ARG curl_IMAGE_TAG
-ARG bcc_IMAGE_TAG
 ARG libuv_IMAGE_TAG
 ARG aws_sdk_IMAGE_TAG
 ARG cpp_misc_IMAGE_TAG
@@ -19,7 +18,6 @@ ARG opentelemetry_IMAGE_TAG
 FROM $base_IMAGE_TAG as build-main
 FROM $openssl_IMAGE_TAG as build-openssl
 FROM $curl_IMAGE_TAG as build-curl
-FROM $bcc_IMAGE_TAG as build-bcc
 FROM $libuv_IMAGE_TAG as build-libuv
 FROM $aws_sdk_IMAGE_TAG as build-aws-sdk
 FROM $cpp_misc_IMAGE_TAG as build-cpp-misc
@@ -54,8 +52,8 @@ RUN apt-get -y update && apt-get install --no-install-recommends -y $PKG_DEV_TOO
 ARG PKG_AWS_TOOLS="awscli"
 RUN apt-get -y update && apt-get install --no-install-recommends -y $PKG_AWS_TOOLS
 
-ARG PKG_PYTHON_LIBS="ijson docker"
-RUN pip3 install $PKG_PYTHON_LIBS
+ARG PKG_PYTHON_LIBS="python3-ijson python3-docker"
+RUN apt-get install -y $PKG_PYTHON_LIBS
 
 # set up apt repositories for google-cloud-sdk
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -81,7 +79,6 @@ RUN wget \
 ENV PATH="$HOME/install/bin:/usr/local/go/bin:${PATH}"
 
 # copy artifacts from individual builds
-COPY --from=build-bcc $HOME/install $HOME/install
 COPY --from=build-libuv $HOME/install $HOME/install
 COPY --from=build-curl $HOME/install $HOME/install
 COPY --from=build-aws-sdk $HOME/install $HOME/install
@@ -99,7 +96,7 @@ COPY --from=build-go $HOME/go/src /usr/local/go/src
 COPY --from=build-go $HOME/go/pkg /usr/local/go/pkg
 
 # Preprocessor for BPF used by cmake
-RUN pip3 install pcpp
+RUN pip3 install pcpp --break-system-packages
 
 # add a script to setup build inside of container
 # to be run after we build the image.

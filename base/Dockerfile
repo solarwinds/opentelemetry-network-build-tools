@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ARG BENV_BASE_IMAGE_DISTRO=debian
-ARG BENV_BASE_IMAGE_VERSION=bullseye
+ARG BENV_BASE_IMAGE_VERSION=bookworm
 FROM ${BENV_BASE_IMAGE_DISTRO}:${BENV_BASE_IMAGE_VERSION} AS build-main
 
 ################ DEPENDENCIES ################
@@ -37,7 +37,7 @@ ARG PKG_TEXT="xxd sed ripgrep less jq"
 RUN apt-get -y install --no-install-recommends $PKG_TEXT
 
 # compilers
-ARG PKG_MAKE="g++"
+ARG PKG_MAKE="g++-16 libc++-16-dev"
 RUN apt-get -y install --no-install-recommends $PKG_MAKE
 
 # build tools
@@ -63,7 +63,7 @@ RUN apt-get -y install --no-install-recommends $PKG_DEV
 ARG PKG_LIBS="libc-ares-dev libelf-dev libssl-dev libzstd-dev"
 RUN apt-get -y install --no-install-recommends $PKG_LIBS
 
-ARG PKG_PY_TEST="python3-pytest python3-dev python3-pip python3-setuptools python3-wheel pylint3"
+ARG PKG_PY_TEST="python3-pytest python3-dev python3-pip python3-setuptools python3-wheel pylint"
 RUN apt-get -y install --no-install-recommends $PKG_PY_TEST
 
 # java sdk
@@ -71,8 +71,10 @@ ARG PKG_JAVA="default-jdk-headless"
 RUN apt-get -y install --no-install-recommends $PKG_JAVA
 
 # LLVM
-ARG PKG_LLVM="llvm-11-dev libclang-11-dev clang-11"
+ARG PKG_LLVM="llvm-16-dev libclang-16-dev clang-16 llvm-16-tools libpolly-16-dev"
 RUN apt-get -y install --no-install-recommends $PKG_LLVM
+
+RUN apt-get remove -y --purge llvm-14 clang-14 libclang-14-dev && apt-get autoremove -y
 
 ## packages that will install recommended dependencies
 
@@ -81,7 +83,7 @@ ARG PKG_MAKE="cmake ccache autoconf autoconf-archive automake libtool make"
 RUN apt-get -y install $PKG_MAKE
 
 # bcc dependencies
-ARG PKG_BCC="bison flex"
+ARG PKG_BCC="bison flex bpfcc-tools libbpf-tools libbpfcc libbpfcc-dev libbpf-dev"
 RUN apt-get -y install $PKG_BCC
 
 # Recent version of Go

@@ -29,8 +29,8 @@ fi
 
 set -x
 
-nproc="$(./nproc.sh)"
-git submodule update --init --recursive --jobs "${nproc}"
+# nproc="$(./nproc.sh)"
+# git submodule update --init --recursive --jobs "${nproc}"
 
 # If this is a debug build set some extra flags to rename the benv image
 if [[ "$1" == "debug" ]]; then
