@@ -86,7 +86,7 @@ RUN apt-get -y install $PKG_BCC
 
 # Recent version of Go
 WORKDIR /usr/local
-RUN curl -L "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -xz
+RUN curl -L "https://go.dev/dl/go${GO_VERSION}.linux-arm64.tar.gz" | tar -xz
 # recommended: add PATH=$PATH:/usr/local/go/bin to ~/.bashrc
 
 # upgrade packages to latest
